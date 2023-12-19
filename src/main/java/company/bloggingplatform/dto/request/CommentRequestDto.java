@@ -14,8 +14,10 @@ public class CommentRequestDto {
 
     @Size(max = 20)
     @NotNull(message = "Content name not be null!")
+    @NotEmpty(message = "Content name not be empty!")
     private String content;
 
+    @NotNull(message = "Publication date name not be null!")
     private LocalDate creetionDate;
 
     @NotNull(message = "User id not be null")

@@ -17,8 +17,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorDto> handleUnauthorizedException(UnauthorizedException e) {
-        List<String> message = new ArrayList<>();
-        message.add(e.getMessage());
+        String[] message = {e.getMessage()};
         ErrorResponse errorResponse = new ErrorResponse(message, true);
         ErrorDto errorDto = new ErrorDto(errorResponse,HttpStatus.UNAUTHORIZED.value(),false);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);
@@ -26,8 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorDto> handleAuthenticationException(AuthenticationException e) {
-        List<String> message = new ArrayList<>();
-        message.add(e.getMessage());
+        String[] message = {e.getMessage()};
         ErrorResponse errorResponse = new ErrorResponse(message, true);
         ErrorDto errorDto = new ErrorDto(errorResponse,HttpStatus.UNAUTHORIZED.value(),false);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);
@@ -35,8 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        List<String> message = new ArrayList<>();
-        message.add(e.getMessage());
+        String[] message = {e.getMessage()};
         ErrorResponse errorResponse = new ErrorResponse(message, true);
         ErrorDto errorDto = new ErrorDto(errorResponse,HttpStatus.BAD_REQUEST.value(),false);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
@@ -44,16 +41,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDto> handleResourceNotFoundException(ResourceNotFoundException e) {
-        List<String> message = new ArrayList<>();
-        message.add(e.getMessage());
+        String[] message = {e.getMessage()};
         ErrorResponse errorResponse = new ErrorResponse(message, true);
         ErrorDto errorDto = new ErrorDto(errorResponse,HttpStatus.NOT_FOUND.value(),false);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDto);
     }
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ErrorDto> handleResourceForbiddenException(ResourceNotFoundException e) {
-        List<String> message = new ArrayList<>();
-        message.add(e.getMessage());
+        String[] message = {e.getMessage()};
         ErrorResponse errorResponse = new ErrorResponse(message, true);
         ErrorDto errorDto = new ErrorDto(errorResponse,HttpStatus.FORBIDDEN.value(),false);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDto);
@@ -63,13 +58,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ErrorDto> handleException(Exception e) {
         if(e.getMessage().contains("Bad credentials")){
-            List<String> messages = new ArrayList<>();
-            messages.add("Username or password is not correct!");
+            String[] messages = new String[]{"Username or password is not correct!"};
             ErrorResponse errorResponse = new ErrorResponse(messages, true);
             ErrorDto errorDto = new ErrorDto(errorResponse,HttpStatus.UNAUTHORIZED.value(),false);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);
         }
-        List<String> message = new ArrayList<>();
+        String[] message = {e.getMessage()};
         ErrorResponse errorResponse = new ErrorResponse(message, true);
         ErrorDto errorDto = new ErrorDto(errorResponse,HttpStatus.BAD_REQUEST.value(),false);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);

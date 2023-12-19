@@ -19,4 +19,5 @@ public interface UserService {
     UserResponseDto findById(Long id);
 
     void changePassword(ChangePasswordRequestDto dto);
+
 }

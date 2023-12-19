@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,7 +35,16 @@ public class PostController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<SuccessDetails<String>> create(@Valid @RequestBody PostRequestDto requestDto){
+    public ResponseEntity<?> create(@Valid @RequestBody PostRequestDto requestDto, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            StringBuilder errorMsg = new StringBuilder("Validation error(s): ");
+            for (FieldError error : errors) {
+                errorMsg.append(error.getDefaultMessage()).append("; ");
+            }
+            return ResponseEntity.badRequest().body(errorMsg);
+        }
+
         postService.create(requestDto);
         return ResponseEntity.ok(new SuccessDetails<>("Post created succesfully",HttpStatus.OK.value(), true));
     }
@@ -41,6 +52,11 @@ public class PostController {
     @GetMapping("/{id}")
     public ResponseEntity<SuccessDetails<PostResponseDto>> findById(@PathVariable Long id){
         return  ResponseEntity.ok(new SuccessDetails<>(postService.findById(id), HttpStatus.OK.value(), true));
+    }
+
+    @GetMapping("/search-by/{title}")
+    public ResponseEntity<SuccessDetails<List<PostResponseDto>>> findByTitle(@PathVariable String title){
+        return  ResponseEntity.ok(new SuccessDetails<>(postService.findByTitle(title), HttpStatus.OK.value(), true));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -55,7 +71,6 @@ public class PostController {
     public ResponseEntity<SuccessDetails<String>> update(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
         postService.update(id, requestDto);
         return ResponseEntity.ok(new SuccessDetails<>("Post update Successfully!",HttpStatus.OK.value(),true));
-
     }
 
 //    @PutMapping("/update/{id}")

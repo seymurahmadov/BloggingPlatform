@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ErrorResponse {
 
-    private List<String> message;
+    private String[] message;
     private boolean isShow;
 
 }

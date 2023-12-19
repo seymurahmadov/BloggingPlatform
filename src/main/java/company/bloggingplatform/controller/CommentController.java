@@ -7,6 +7,8 @@ import company.bloggingplatform.service.impl.CommentServiceImpl;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,7 +31,16 @@ public class CommentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<SuccessDetails<String>> create(@Valid @RequestBody CommentRequestDto commentRequestDto){
+    public ResponseEntity<?> create(@Valid @RequestBody CommentRequestDto commentRequestDto, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            StringBuilder errorMsg = new StringBuilder("Validation error(s): ");
+            for (FieldError error : errors) {
+                errorMsg.append(error.getDefaultMessage()).append("; ");
+            }
+            return ResponseEntity.badRequest().body(errorMsg);
+        }
+
         commentService.create(commentRequestDto);
         return ResponseEntity.ok(new SuccessDetails<>("Comment created succesfully",HttpStatus.OK.value(), true));
     }

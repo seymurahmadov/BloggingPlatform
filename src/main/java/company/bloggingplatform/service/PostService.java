@@ -15,4 +15,6 @@ public interface PostService {
     void update(Long id, PostRequestDto requestDto);
 
     PostResponseDto findById(Long id);
+
+    List<PostResponseDto> findByTitle(String title);
 }

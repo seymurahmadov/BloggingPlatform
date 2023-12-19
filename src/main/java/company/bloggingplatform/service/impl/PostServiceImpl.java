@@ -60,6 +60,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostResponseDto> findByTitle(String title) {
+        List<PostEntity> byTitle = postRepository.findByTitle(title);
+       return postMapper.mapEntityListToResponseList(byTitle);
+    }
+
+    @Override
     public void delete(Long id){
 
         PostEntity postEntity = postRepository.findById(id).orElseThrow(() -> new MethodArgumentNotValidException("Data not found with this ID"));

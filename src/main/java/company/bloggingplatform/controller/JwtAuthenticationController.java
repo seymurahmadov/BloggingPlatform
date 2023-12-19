@@ -6,9 +6,11 @@ import company.bloggingplatform.dto.request.JwtSignInRequestDto;
 import company.bloggingplatform.dto.response.JwtResponseDto;
 import company.bloggingplatform.entity.UserEntity;
 import company.bloggingplatform.enumuration.Role;
+import company.bloggingplatform.exception.handler.SuccessDetails;
 import company.bloggingplatform.repository.UserRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,9 +19,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -37,8 +42,17 @@ public class JwtAuthenticationController {
 	private final UserRepository userRepo;
 
 	@RequestMapping(value = "/signin", method = RequestMethod.POST)
-	public JwtResponseDto signIn(@Valid @RequestBody JwtSignInRequestDto request)
+	public ResponseEntity<?> signIn(@Valid @RequestBody JwtSignInRequestDto request, BindingResult bindingResult)
 			throws Exception {
+
+		if (bindingResult.hasErrors()) {
+			List<FieldError> errors = bindingResult.getFieldErrors();
+			StringBuilder errorMsg = new StringBuilder("Validation error(s): ");
+			for (FieldError error : errors) {
+				errorMsg.append(error.getDefaultMessage()).append("; ");
+			}
+			return ResponseEntity.badRequest().body(errorMsg);
+		}
 
 		authenticate(request.getMail(), request.getPassword());
 		final UserDetails userDetails = jwtInMemoryUserDetailsService
@@ -53,11 +67,20 @@ public class JwtAuthenticationController {
 				.role(request.getRole())
 				.build();
 
-		return  signInResponseDto;
+		return  ResponseEntity.ok(new SuccessDetails<>(signInResponseDto, HttpStatus.OK.value(), true));
 	}
 
 	@RequestMapping(value = "/signup",method = RequestMethod.POST)
-	public ResponseEntity signUp (@Valid @RequestBody JWTSignUpRequestDto dto){
+	public ResponseEntity<?> signUp (@Valid @RequestBody JWTSignUpRequestDto dto, BindingResult bindingResult){
+
+		if (bindingResult.hasErrors()) {
+			List<FieldError> errors = bindingResult.getFieldErrors();
+			StringBuilder errorMsg = new StringBuilder("Validation error(s): ");
+			for (FieldError error : errors) {
+				errorMsg.append(error.getDefaultMessage()).append("; ");
+			}
+			return ResponseEntity.badRequest().body(errorMsg);
+		}
 
 		UserEntity entity = userRepo.findUsersEntityByMail(dto.getMail());
 		if (entity == null) {

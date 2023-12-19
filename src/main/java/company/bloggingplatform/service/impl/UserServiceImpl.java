@@ -62,6 +62,8 @@ public class UserServiceImpl implements UserService {
             throw new MethodArgumentNotValidException("Invalid credentials");
         }
 
+        userRepository.save(usersEntityByMail);
+
     }
 
 
